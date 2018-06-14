@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         // Create a ContentValues object where column names are the keys and the book's attributes are the values.
         ContentValues values = new ContentValues();
         values.put(BookEntry.COLUMN_PRODUCT_NAME, "Sundiver");
+        values.put(BookEntry.COLUMN_AUTHOR_NAME, "David Brin");
         values.put(BookEntry.COLUMN_PRICE, "50");
         values.put(BookEntry.COLUMN_QUANTITY, 1);
         values.put(BookEntry.COLUMN_SUPPLIER_NAME, "Nemira");
@@ -55,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
             displayTextTextView.setText("This table contains " + cursor.getCount() + " books.\n\n");
             displayTextTextView.append(BookEntry._ID + " - " +
                     BookEntry.COLUMN_PRODUCT_NAME + " - " +
+                    BookEntry.COLUMN_AUTHOR_NAME + " - " +
                     BookEntry.COLUMN_PRICE + " - " +
                     BookEntry.COLUMN_QUANTITY + " - " +
                     BookEntry.COLUMN_SUPPLIER_NAME + " - " +
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
             // Get the index for each column
             int IdColumnIndex = cursor.getColumnIndex(BookEntry._ID);
             int productNameIndex = cursor.getColumnIndex(BookEntry.COLUMN_PRODUCT_NAME);
+            int authorNameIndex = cursor.getColumnIndex(BookEntry.COLUMN_AUTHOR_NAME);
             int priceIndex = cursor.getColumnIndex(BookEntry.COLUMN_PRICE);
             int quantityIndex = cursor.getColumnIndex(BookEntry.COLUMN_QUANTITY);
             int supplierNameIndex = cursor.getColumnIndex(BookEntry.COLUMN_SUPPLIER_NAME);
@@ -73,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
                 // Use the index to extract the String or Int value at the current row the cursor is on.
                 int currentId = cursor.getInt(IdColumnIndex);
                 String currentProductName = cursor.getString(productNameIndex);
+                String currentAuthorName = cursor.getString(authorNameIndex);
                 int currentPrice = cursor.getInt(priceIndex);
                 int currentQuantity = cursor.getInt(quantityIndex);
                 String currentSupplierName = cursor.getString(supplierNameIndex);
@@ -81,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
                 // Display the values from each column of the current row in the TextView
                 displayTextTextView.append("\n" + currentId + " - " +
                         currentProductName + " - " +
+                        currentAuthorName + " - " +
                         currentPrice + " - " +
                         currentQuantity + " - " +
                         currentSupplierName + " - " +
@@ -98,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
         String[] projection = {
                 BookEntry._ID,
                 BookEntry.COLUMN_PRODUCT_NAME,
+                BookEntry.COLUMN_AUTHOR_NAME,
                 BookEntry.COLUMN_PRICE,
                 BookEntry.COLUMN_QUANTITY,
                 BookEntry.COLUMN_SUPPLIER_NAME,

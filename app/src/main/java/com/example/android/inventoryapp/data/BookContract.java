@@ -12,6 +12,8 @@ public class BookContract {
         public static final String _ID = BaseColumns._ID;
         // The product_name column.
         public static final String COLUMN_PRODUCT_NAME = "product_name";
+        // The author_name column.
+        public static final String COLUMN_AUTHOR_NAME = "author_name";
         // The price column.
         public static final String COLUMN_PRICE = "price";
         // The quantity column.

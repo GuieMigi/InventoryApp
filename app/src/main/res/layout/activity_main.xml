@@ -10,7 +10,7 @@
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/button"
+        android:layout_above="@id/floating_action_button"
         android:layout_marginTop="16dp">
 
         <TextView
@@ -22,15 +22,14 @@
 
     </ScrollView>
 
-    <Button
+    <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/button"
+        android:id="@+id/floating_action_button"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="16dp"
         android:onClick="insertBook"
-        android:text="Add Book"
-        android:textAllCaps="false" />
+        android:src="@drawable/add_product_image" />
 
 </RelativeLayout>
