@@ -12,20 +12,19 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.android.inventoryapp.data.BookContract;
 import com.example.android.inventoryapp.data.BookContract.BookEntry;
 import com.example.android.inventoryapp.data.BookDbHelper;
-
-import java.util.zip.Inflater;
 
 public class MainActivity extends AppCompatActivity {
 
     BookDbHelper dbHelper;
     BookCursorAdapter bookAdapter;
+
+    // TODO: make the ListView a local variable after the implementation of CursorLoader.
+    ListView bookListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,17 +35,17 @@ public class MainActivity extends AppCompatActivity {
 
         // TODO: Remove the cursor and set the bookAdapter cursor to null after the BookProvider is implemented.
 
-        Cursor cursor = queryBooks();
-
         // Find the ListView which will be populated with the book data.
-        ListView bookListView = findViewById(R.id.list_view);
+        bookListView = findViewById(R.id.list_view);
         View emptyView = findViewById(R.id.empty_view);
         bookListView.setEmptyView(emptyView);
+        displayInfo();
+        /*
         // Setup an Adapter to create a list item for each row of pet data in the Cursor.
         bookAdapter = new BookCursorAdapter(this, cursor);
         // Attach the adapter to the ListView.
         bookListView.setAdapter(bookAdapter);
-
+        */
         // Set onItemClickListener on the ListView to open the EditorActivity.
         bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -61,13 +60,23 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // TODO: Remove the helper method after the implementation of CursorLoader.
+    private void displayInfo() {
+        Cursor cursor = queryBooks();
+        // Setup an Adapter to create a list item for each row of pet data in the Cursor.
+        bookAdapter = new BookCursorAdapter(this, cursor);
+        // Attach the adapter to the ListView.
+        bookListView.setAdapter(bookAdapter);
+    }
+
     @Override
     protected void onStart() {
+        displayInfo();
         super.onStart();
     }
 
     // Insert hard coded data into the books table.
-    public void insertBook(View view) {
+    public void insertBook() {
         // Get the database in write mode.
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         // Create a ContentValues object where column names are the keys and the book's attributes are the values.
@@ -134,8 +143,6 @@ public class MainActivity extends AppCompatActivity {
 
     // TODO: Remove the temporary method when it is no longer needed.
     private Cursor queryBooks() {
-        // Get the database in read mode.
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
         String[] projection = {
                 BookEntry._ID,
                 BookEntry.COLUMN_PRODUCT_NAME,
@@ -146,14 +153,12 @@ public class MainActivity extends AppCompatActivity {
                 BookEntry.COLUMN_SUPPLIER_PHONE_NUMBER
         };
 
-        return database.query(
-                BookEntry.TABLE_NAME,
-                projection,
+        return getContentResolver().query(
+                BookEntry.CONTENT_URI, projection,
                 null,
                 null,
-                null,
-                null,
-                null);
+                null
+        );
     }
 
     @Override
@@ -169,6 +174,8 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             // Respond to a click on the "Insert test data" menu option.
             case R.id.insert_test_data:
+                insertBook();
+                displayInfo();
                 return true;
 
             // Respond to a click on the "Delete everything" menu option.

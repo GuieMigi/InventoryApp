@@ -7,7 +7,7 @@ import android.provider.BaseColumns;
 public class BookContract {
 
     // The content authority is a name for the entire content provider.
-    public static final String CONTENT_AUTHORITY = "com.example.android. inventoryapp";
+    public static final String CONTENT_AUTHORITY = "com.example.android.inventoryapp";
     // The base content uri that contains the scheme and the content authority.
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     // The path for the books table.
