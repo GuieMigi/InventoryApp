@@ -6,12 +6,44 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <ScrollView
-        android:id="@+id/scroll_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/floating_action_button"
-        android:layout_marginTop="16dp">
+    <ListView
+        android:id="@+id/list_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawSelectorOnTop="true"></ListView>
+
+    <RelativeLayout
+        android:id="@+id/empty_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+
+        <ImageView
+            android:id="@+id/empty_view_image_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/empty_bookshelf" />
+
+        <TextView
+            android:id="@+id/empty_view_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/empty_view_image_view"
+            android:layout_centerHorizontal="true"
+            android:paddingTop="8dp"
+            android:text="The Bookcase is empty..."
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/empty_view_text_view2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/empty_view_text_view"
+            android:layout_centerHorizontal="true"
+            android:paddingTop="8dp"
+            android:text="You should add some books!" />
 
         <TextView
             android:id="@+id/text_view"
@@ -20,14 +52,17 @@
             android:gravity="center"
             android:text="" />
 
-    </ScrollView>
+    </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/floating_action_button"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
         android:onClick="insertBook"
         android:src="@drawable/add_product_image" />

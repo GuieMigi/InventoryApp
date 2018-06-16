@@ -1,14 +1,19 @@
 package com.example.android.inventoryapp;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.CursorAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.android.inventoryapp.data.BookContract;
@@ -20,6 +25,7 @@ import java.util.zip.Inflater;
 public class MainActivity extends AppCompatActivity {
 
     BookDbHelper dbHelper;
+    BookCursorAdapter bookAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,12 +33,37 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         dbHelper = new BookDbHelper(this);
+
+        // TODO: Remove the cursor and set the bookAdapter cursor to null after the BookProvider is implemented.
+
+        Cursor cursor = queryBooks();
+
+        // Find the ListView which will be populated with the book data.
+        ListView bookListView = findViewById(R.id.list_view);
+        View emptyView = findViewById(R.id.empty_view);
+        bookListView.setEmptyView(emptyView);
+        // Setup an Adapter to create a list item for each row of pet data in the Cursor.
+        bookAdapter = new BookCursorAdapter(this, cursor);
+        // Attach the adapter to the ListView.
+        bookListView.setAdapter(bookAdapter);
+
+        // Set onItemClickListener on the ListView to open the EditorActivity.
+        bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                ContentUris contentUris = new ContentUris();
+                Uri currentBookUri = contentUris.withAppendedId(BookEntry.CONTENT_URI, i);
+                Intent startEditorActivity = new Intent(MainActivity.this, EditorActivity.class);
+                startEditorActivity.setData(currentBookUri);
+                startEditorActivity.putExtra("BOOK_ID", i);
+                startActivity(startEditorActivity);
+            }
+        });
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        displayText();
     }
 
     // Insert hard coded data into the books table.
@@ -48,10 +79,9 @@ public class MainActivity extends AppCompatActivity {
         values.put(BookEntry.COLUMN_SUPPLIER_NAME, "Nemira");
         values.put(BookEntry.COLUMN_SUPPLIER_PHONE_NUMBER, "+40 721 747 464");
         database.insert(BookEntry.TABLE_NAME, null, values);
-
-        displayText();
     }
 
+    // TODO: Remove the temporary method when it is no longer needed.
     // A temporary method that displays the content of the SQL table inside a TextView.
     private void displayText() {
         Cursor cursor = queryBooks();
@@ -102,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // TODO: Remove the temporary method when it is no longer needed.
     private Cursor queryBooks() {
         // Get the database in read mode.
         SQLiteDatabase database = dbHelper.getReadableDatabase();
@@ -115,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
                 BookEntry.COLUMN_SUPPLIER_PHONE_NUMBER
         };
 
-        Cursor cursor = database.query(
+        return database.query(
                 BookEntry.TABLE_NAME,
                 projection,
                 null,
@@ -123,8 +154,6 @@ public class MainActivity extends AppCompatActivity {
                 null,
                 null,
                 null);
-
-        return cursor;
     }
 
     @Override
