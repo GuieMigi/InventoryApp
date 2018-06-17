@@ -13,6 +13,9 @@ public class BookContract {
     // The path for the books table.
     public static final String PATH_BOOKS = "books";
 
+    private BookContract() {
+    }
+
     public static final class BookEntry implements BaseColumns {
 
         // The content URI to access the book data in the provider.

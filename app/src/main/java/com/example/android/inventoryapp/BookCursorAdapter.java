@@ -2,6 +2,7 @@ package com.example.android.inventoryapp;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +37,13 @@ public class BookCursorAdapter extends CursorAdapter {
         String authorString = cursor.getString(cursor.getColumnIndex(BookEntry.COLUMN_AUTHOR_NAME));
         String quantityString = cursor.getString(cursor.getColumnIndex(BookEntry.COLUMN_QUANTITY));
 
-        // Update the TextViews with the attributes for the current book.
+        // If the author name is an empty string or null, then use some default text
+        // that says "Unknown author", so the TextView isn't blank.
+        if (TextUtils.isEmpty(authorString)) {
+            bookAuthorTextView.setText("Unknown author");
+        }
+
+        // Update the TextViews with the attributes of the current book.
         bookTitleTextView.setText(titleString);
         bookAuthorTextView.setText(authorString);
         bookQuantityTextView.setText(quantityString);

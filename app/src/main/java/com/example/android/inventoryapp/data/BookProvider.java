@@ -46,6 +46,7 @@ public class BookProvider extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+
         SQLiteDatabase database = dbHelper.getReadableDatabase();
         Cursor cursor;
         int matcher = sUriMatcher.match(uri);
@@ -72,6 +73,7 @@ public class BookProvider extends ContentProvider {
     @Nullable
     @Override
     public String getType(@NonNull Uri uri) {
+
         final int matcher = sUriMatcher.match(uri);
 
         switch (matcher) {
@@ -141,30 +143,30 @@ public class BookProvider extends ContentProvider {
         }
     }
 
-    private Uri insertBook(Uri uri, ContentValues contentValues) {
+    private Uri insertBook(Uri uri, ContentValues values) {
         // Check that the name is not null.
-        String name = contentValues.getAsString(BookEntry.COLUMN_PRODUCT_NAME);
+        String name = values.getAsString(BookEntry.COLUMN_PRODUCT_NAME);
 
         if (TextUtils.isEmpty(name)) {
             throw new IllegalArgumentException("The book requires a title");
         }
 
         // If the price is provided, check that it's greater than or equal to 0.
-        Integer price = contentValues.getAsInteger(BookEntry.COLUMN_PRICE);
+        Integer price = values.getAsInteger(BookEntry.COLUMN_PRICE);
 
         if (price != null && price < 0) {
             throw new IllegalArgumentException("The price cannot have a negative value");
         }
 
         // If the quantity is provided, check that it's greater than or equal to 0.
-        Integer quantity = contentValues.getAsInteger(BookEntry.COLUMN_QUANTITY);
+        Integer quantity = values.getAsInteger(BookEntry.COLUMN_QUANTITY);
 
         if (quantity != null && quantity < 0) {
             throw new IllegalArgumentException("The quantity cannot have a negative value");
         }
 
         // Check that the supplier name is not null.
-        String supplierName = contentValues.getAsString(BookEntry.COLUMN_SUPPLIER_NAME);
+        String supplierName = values.getAsString(BookEntry.COLUMN_SUPPLIER_NAME);
 
         if (TextUtils.isEmpty(supplierName)) {
             throw new IllegalArgumentException("The book requires a supplier name");
@@ -172,7 +174,7 @@ public class BookProvider extends ContentProvider {
         // Get the database in write mode.
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         // Insert a new row for book in the database, returning the ID of that new row.
-        long id = database.insert(BookEntry.TABLE_NAME, null, contentValues);
+        long id = database.insert(BookEntry.TABLE_NAME, null, values);
 
         // Show a toast message if the insertion was not successful.
         if (id == -1) {
@@ -190,6 +192,7 @@ public class BookProvider extends ContentProvider {
         int rowsDeleted = database.delete(BookEntry.TABLE_NAME, selection, selectionArgs);
 
         if (rowsDeleted != 0) {
+            // Notify all listeners that the data has changed for the book content URI.
             mContext.getContentResolver().notifyChange(uri, null);
         }
         // Returns the number of database rows affected by the update statement.
