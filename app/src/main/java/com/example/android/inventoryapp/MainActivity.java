@@ -7,8 +7,8 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -17,16 +17,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
-
 import com.example.android.inventoryapp.data.BookContract.BookEntry;
-import com.example.android.inventoryapp.data.BookDbHelper;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     // The Id of the BookCursorLoader.
     private static final int BOOK_CURSOR_LOADER_ID = 0;
-    // Declare a new instance of the BookDbHelper class.
-    private BookDbHelper dbHelper;
     // Declare a new instance of the BookCursorAdapter.
     private BookCursorAdapter bookAdapter;
 
@@ -35,7 +31,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        dbHelper = new BookDbHelper(this);
+        // Setup FloatingActionButton to open EditorActivity.
+        FloatingActionButton floatingActionButton = findViewById(R.id.floating_action_button);
+        // Set onClickListener on the floatingActionButton to open the EditorActivity.
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent startEditor = new Intent(MainActivity.this, EditorActivity.class);
+                startActivity(startEditor);
+            }
+        });
 
         // Find the ListView which will be populated with the book data and set the emptyView.
         final ListView bookListView = findViewById(R.id.list_view);
@@ -53,12 +58,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         // Set onItemClickListener on the ListView to open the EditorActivity.
         bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 ContentUris contentUris = new ContentUris();
-                Uri currentBookUri = contentUris.withAppendedId(BookEntry.CONTENT_URI, i);
+                Uri currentBookUri = contentUris.withAppendedId(BookEntry.CONTENT_URI, id);
                 Intent startEditorActivity = new Intent(MainActivity.this, EditorActivity.class);
                 startEditorActivity.setData(currentBookUri);
-                startEditorActivity.putExtra("BOOK_ID", i);
+                startEditorActivity.putExtra("BOOK_ID", id);
                 startActivity(startEditorActivity);
             }
         });
@@ -66,13 +71,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     // Insert hard coded data into the books table.
     public void insertBook() {
-        // Get the database in write mode.
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
         // Create a ContentValues object where column names are the keys and the book's attributes are the values.
         ContentValues values = new ContentValues();
         values.put(BookEntry.COLUMN_PRODUCT_NAME, "Sundiver");
         values.put(BookEntry.COLUMN_AUTHOR_NAME, "David Brin");
-        values.put(BookEntry.COLUMN_PRICE, "50");
+        values.put(BookEntry.COLUMN_PRICE, "49.99");
         values.put(BookEntry.COLUMN_QUANTITY, 1);
         values.put(BookEntry.COLUMN_SUPPLIER_NAME, "Nemira");
         values.put(BookEntry.COLUMN_SUPPLIER_PHONE_NUMBER, "+40 721 747 464");
