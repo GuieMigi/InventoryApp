@@ -31,6 +31,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Title"
+                android:inputType="textCapWords"
                 android:maxLines="1" />
 
             <EditText
@@ -38,6 +39,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Author"
+                android:inputType="textCapWords"
                 android:maxLines="1" />
 
         </LinearLayout>
@@ -65,6 +67,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:hint="Price"
+            android:inputType="numberDecimal"
             android:maxLines="1" />
 
     </LinearLayout>
@@ -90,6 +93,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:hint="Quantity"
+            android:inputType="number"
             android:maxLines="1" />
 
     </LinearLayout>
@@ -120,6 +124,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Name"
+                android:inputType="textCapWords"
                 android:maxLines="1" />
 
             <EditText
@@ -127,6 +132,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Phone number"
+                android:inputType="phone"
                 android:maxLines="1" />
 
         </LinearLayout>

@@ -1,6 +1,7 @@
 package com.example.android.inventoryapp;
 
 import android.app.LoaderManager;
+import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
@@ -9,14 +10,15 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.android.inventoryapp.data.BookContract.BookEntry;
-
 
 public class EditorActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -111,6 +113,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         switch (item.getItemId()) {
             // Respond to a click on the "Insert test data" menu option.
             case R.id.save_book:
+                // Save the book into the database.
+                saveBook();
                 return true;
 
             // Respond to a click on the "Delete everything" menu option.
@@ -129,6 +133,99 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 // Create a click listener to handle the user confirming that changes should be discarded.
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void saveBook() {
+        // Determine if this is a new or existing book by checking if currentBooktUri is null or not.
+        if (currentBookUri == null) {
+            // Read from input fields. Use trim to eliminate leading or trailing white space.
+            String titleString = bookTitleEditText.getText().toString().trim();
+            String authorString = bookAuthorEditText.getText().toString().trim();
+            String priceString = bookPriceEditText.getText().toString().trim();
+            String quantityString = bookQuantityEditText.getText().toString().trim();
+            String supplierString = bookSupplierNameEditText.getText().toString().trim();
+            String supplierPhoneNumberString = bookSupplierPhoneNumberEditText.getText().toString().trim();
+
+            //Check if the required fields ahave been filled.
+            if (TextUtils.isEmpty(titleString) || TextUtils.isEmpty(supplierString)) {
+                Toast.makeText(this, "Please fill all the required fields!", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            double priceDouble = 0;
+            int quantityInt = 0;
+
+            // Check if the priceString is empty.
+            if (!TextUtils.isEmpty(priceString)) {
+                priceDouble = Double.parseDouble(priceString);
+            }
+            // Check if the quantityString is empty.
+            if (!TextUtils.isEmpty(quantityString)) {
+                quantityInt = Integer.parseInt(quantityString);
+            }
+            // Create a ContentValues object where column names are the keys and book attributes from the editors are the values.
+            ContentValues values = new ContentValues();
+            values.put(BookEntry.COLUMN_PRODUCT_NAME, titleString);
+            values.put(BookEntry.COLUMN_AUTHOR_NAME, authorString);
+            values.put(BookEntry.COLUMN_PRICE, priceDouble);
+            values.put(BookEntry.COLUMN_QUANTITY, quantityInt);
+            values.put(BookEntry.COLUMN_SUPPLIER_NAME, supplierString);
+            values.put(BookEntry.COLUMN_SUPPLIER_PHONE_NUMBER, supplierPhoneNumberString);
+            // Call the ContentResolver to insert a new row in the database.
+            Uri newUri = getContentResolver().insert(BookEntry.CONTENT_URI, values);
+
+            if (newUri == null) {
+                // If the new content URI is null, then there was an error with insertion.
+                Toast.makeText(this, "Error saving book", Toast.LENGTH_LONG).show();
+            } else {
+                // Otherwise, the insertion was successful and we can display a toast.
+                Toast.makeText(this, "Book saved", Toast.LENGTH_LONG).show();
+            }
+            // Exit the activity.
+            finish();
+        } else {
+            // Read from input fields. Use trim to eliminate leading or trailing white space.
+            String titleString = bookTitleEditText.getText().toString().trim();
+            String authorString = bookAuthorEditText.getText().toString().trim();
+            String priceString = bookPriceEditText.getText().toString().trim();
+            String quantityString = bookQuantityEditText.getText().toString().trim();
+            String supplierString = bookSupplierNameEditText.getText().toString().trim();
+            String supplierPhoneNumberString = bookSupplierPhoneNumberEditText.getText().toString().trim();
+
+            double priceDouble = 0;
+            int quantityInt = 0;
+
+            if (TextUtils.isEmpty(priceString) || TextUtils.isEmpty(quantityString)) {
+                Toast.makeText(this, "Please fill all the required fields", Toast.LENGTH_LONG).show();
+                return;
+            }
+            // Check if the priceString is empty.
+            if (!TextUtils.isEmpty(priceString)) {
+                priceDouble = Double.parseDouble(priceString);
+            }
+            // Check if the quantityString is empty.
+            if (!TextUtils.isEmpty(quantityString)) {
+                quantityInt = Integer.parseInt(quantityString);
+            }
+            // Create a ContentValues object where column names are the keys and book attributes from the editors are the values.
+            ContentValues values = new ContentValues();
+            values.put(BookEntry.COLUMN_PRODUCT_NAME, titleString);
+            values.put(BookEntry.COLUMN_AUTHOR_NAME, authorString);
+            values.put(BookEntry.COLUMN_PRICE, priceDouble);
+            values.put(BookEntry.COLUMN_QUANTITY, quantityInt);
+            values.put(BookEntry.COLUMN_SUPPLIER_NAME, supplierString);
+            values.put(BookEntry.COLUMN_SUPPLIER_PHONE_NUMBER, supplierPhoneNumberString);
+
+            int rowsInserted = getContentResolver().update(currentBookUri, values, null, null);
+
+            if (rowsInserted == -1) {
+                Toast.makeText(this, "Error saving book", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, "Book saved", Toast.LENGTH_LONG).show();
+            }
+            // Exit the activity.
+            finish();
+        }
     }
 
     @Override
