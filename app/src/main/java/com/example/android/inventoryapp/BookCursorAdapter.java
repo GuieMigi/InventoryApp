@@ -40,7 +40,7 @@ public class BookCursorAdapter extends CursorAdapter {
         // If the author name is an empty string or null, then use some default text
         // that says "Unknown author", so the TextView isn't blank.
         if (TextUtils.isEmpty(authorString)) {
-            bookAuthorTextView.setText("Unknown author");
+            authorString = "Unknown author";
         }
 
         // Update the TextViews with the attributes of the current book.

@@ -1,9 +1,11 @@
 package com.example.android.inventoryapp;
 
+import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
@@ -100,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
             // Respond to a click on the "Delete everything" menu option.
             case R.id.delete_everything:
-                deleteEverything();
+                showDeleteEverythingConfirmationDialog();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -143,5 +145,30 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             // Otherwise, the delete was successful and we can display a toast.
             Toast.makeText(this, "Delete successful", Toast.LENGTH_LONG).show();
         }
+    }
+
+    public void showDeleteEverythingConfirmationDialog() {
+        // Create an AlertDialog.Builder and set the message, Click listeners for the positive and negative buttons on the dialog.
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Delete everything?");
+        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // User clicked the "Delete" button, so delete the book.
+                deleteEverything();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // User clicked the "Cancel" button, so dismiss the dialog.
+                if (dialogInterface != null) {
+                    dialogInterface.dismiss();
+                }
+            }
+        });
+        // Create and show the AlertDialog.
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 }

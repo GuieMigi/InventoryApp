@@ -1,8 +1,10 @@
 package com.example.android.inventoryapp;
 
+import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
@@ -10,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -119,7 +122,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
             // Respond to a click on the "Delete everything" menu option.
             case R.id.delete_book:
-                deleteBook();
+                showDeleteConfirmationDialog();
                 return true;
 
             // Respond to a click on the "Up" arrow button in the app bar
@@ -129,11 +132,23 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                     NavUtils.navigateUpFromSameTask(this);
                     return true;
                 }
-                // TODO: Implement the discard button listener.
-                // Otherwise if there are unsaved changes, setup a dialog to warn the user.
-                // Create a click listener to handle the user confirming that changes should be discarded.
+                // Show a dialog that notifies the user they have unsaved changes.
+                showUnsavedChangesDialog();
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        // If the pet hasn't changed, continue with handling back button press.
+        if (!bookChanged) {
+            super.onBackPressed();
+            return;
+        }
+
+        // Show dialog that there are unsaved changes.
+        showUnsavedChangesDialog();
     }
 
     public void saveBook() {
@@ -246,6 +261,57 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             // Exit the activity.
             finish();
         }
+    }
+
+    // Method used to create a “Discard changes” dialog.
+    public void showUnsavedChangesDialog() {
+        // Create an AlertDialog.Builder and set the message, Click listeners for the positive and negative buttons on the dialog.
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Discard you changes?");
+        builder.setPositiveButton("Discard", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                NavUtils.navigateUpFromSameTask(EditorActivity.this);
+            }
+        });
+        builder.setNegativeButton("Keep editing", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // User clicked the "Keep editing" button, so dismiss the dialog and continue editing the pet.
+                if (dialogInterface != null) {
+                    dialogInterface.dismiss();
+                }
+            }
+        });
+        // Create and show the AlertDialog.
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    // Method used to create a "Delete confirmation" dialog.
+    public void showDeleteConfirmationDialog() {
+        // Create an AlertDialog.Builder and set the message, Click listeners for the positive and negative buttons on the dialog.
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Delete this book?");
+        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // User clicked the "Delete" button, so delete the book.
+                deleteBook();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // User clicked the "Cancel" button, so dismiss the dialog.
+                if (dialogInterface != null) {
+                    dialogInterface.dismiss();
+                }
+            }
+        });
+        // Create and show the AlertDialog.
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
     @Override
