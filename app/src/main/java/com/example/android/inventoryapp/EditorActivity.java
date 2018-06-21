@@ -119,6 +119,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
             // Respond to a click on the "Delete everything" menu option.
             case R.id.delete_book:
+                deleteBook();
                 return true;
 
             // Respond to a click on the "Up" arrow button in the app bar
@@ -222,6 +223,25 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 Toast.makeText(this, "Error saving book", Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(this, "Book saved", Toast.LENGTH_LONG).show();
+            }
+            // Exit the activity.
+            finish();
+        }
+    }
+
+    public void deleteBook() {
+
+        if (currentBookUri != null) {
+            // Call the ContentResolver to delete the book at the given content URI.
+            int rowsDeleted = getContentResolver().delete(currentBookUri, null, null);
+
+            // Show a toast message depending on whether or not the delete was successful.
+            if (rowsDeleted == 0) {
+                // If no rows were deleted, then there was an error with the delete.
+                Toast.makeText(this, "Error deleting book", Toast.LENGTH_LONG).show();
+            } else {
+                // Otherwise, the delete was successful and we can display a successful toast.
+                Toast.makeText(this, "Book deleted", Toast.LENGTH_LONG).show();
             }
             // Exit the activity.
             finish();
