@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
-import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -231,8 +230,10 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             values.put(BookEntry.COLUMN_QUANTITY, quantityInt);
             values.put(BookEntry.COLUMN_SUPPLIER_NAME, supplierString);
             values.put(BookEntry.COLUMN_SUPPLIER_PHONE_NUMBER, supplierPhoneNumberString);
+            String selection = BookEntry._ID + "=?";
+            String[] selectionArgs = new String[]{String.valueOf(currentBookId)};
 
-            int rowsInserted = getContentResolver().update(currentBookUri, values, null, null);
+            int rowsInserted = getContentResolver().update(currentBookUri, values, selection, selectionArgs);
 
             if (rowsInserted == -1) {
                 Toast.makeText(this, "Error saving book", Toast.LENGTH_LONG).show();

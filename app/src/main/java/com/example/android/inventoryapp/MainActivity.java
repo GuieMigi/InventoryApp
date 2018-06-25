@@ -28,6 +28,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     // Declare a new instance of the BookCursorAdapter.
     private BookCursorAdapter bookAdapter;
 
+    private Uri currentBookUri;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 ContentUris contentUris = new ContentUris();
-                Uri currentBookUri = contentUris.withAppendedId(BookEntry.CONTENT_URI, id);
+                currentBookUri = contentUris.withAppendedId(BookEntry.CONTENT_URI, id);
                 Intent startEditorActivity = new Intent(MainActivity.this, EditorActivity.class);
                 startEditorActivity.setData(currentBookUri);
                 startEditorActivity.putExtra("BOOK_ID", id);
@@ -115,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             case BOOK_CURSOR_LOADER_ID:
                 String[] projection = {BookEntry._ID,
                         BookEntry.COLUMN_PRODUCT_NAME,
-                        BookEntry.COLUMN_AUTHOR_NAME,
+                        BookEntry.COLUMN_PRICE,
                         BookEntry.COLUMN_QUANTITY};
                 return new CursorLoader(this, BookEntry.CONTENT_URI, projection, null, null, null);
             default:
@@ -170,5 +172,52 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         // Create and show the AlertDialog.
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
+    }
+
+    public void sellBook() {
+
+        if (currentBookUri != null) {
+            String[] projection = new String[]{
+                    BookEntry._ID,
+                    BookEntry.COLUMN_PRODUCT_NAME,
+                    BookEntry.COLUMN_AUTHOR_NAME,
+                    BookEntry.COLUMN_PRICE,
+                    BookEntry.COLUMN_QUANTITY,
+                    BookEntry.COLUMN_SUPPLIER_NAME,
+                    BookEntry.COLUMN_SUPPLIER_PHONE_NUMBER
+            };
+
+            Cursor cursor = getContentResolver().query(currentBookUri, projection, null, null, null);
+            // Bail early if the cursor is null or there is less than 1 row in the cursor.
+            if (cursor == null || cursor.getCount() < 1) {
+                return;
+            }
+            // Move to the first row in the cursor.
+            cursor.moveToFirst();
+            // Get the current quantity for the book.
+            int currentBookQuantity = cursor.getInt(cursor.getColumnIndex(BookEntry.COLUMN_QUANTITY));
+            // If the quantity is 0 then show a Toast that the book is no longer available.
+            if (currentBookQuantity == 0) {
+                Toast.makeText(this, "The book is no longer available", Toast.LENGTH_LONG).show();
+            } else {
+                // The book is still available so decrease the quantity by 1.
+                currentBookQuantity--;
+                // Create a new ContentValues object.
+                ContentValues values = new ContentValues();
+                // Store the new quantity for the book.
+                values.put(BookEntry.COLUMN_QUANTITY, currentBookQuantity);
+                // Update the book with the new quantity.
+                int rowsModified = getContentResolver().update(currentBookUri, values, null, null);
+
+                // Check if the update was successful.
+                if (rowsModified == -1) {
+                    Toast.makeText(this, "Error selling book", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(this, "Book sold", Toast.LENGTH_LONG).show();
+                }
+            }
+            // Close the cursor to free the resources.
+            cursor.close();
+        }
     }
 }

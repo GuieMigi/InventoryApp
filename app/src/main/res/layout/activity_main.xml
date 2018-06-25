@@ -10,7 +10,8 @@
         android:id="@+id/list_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:drawSelectorOnTop="true"></ListView>
+        android:drawSelectorOnTop="true"
+        android:focusable="true"></ListView>
 
     <RelativeLayout
         android:id="@+id/empty_view"
@@ -43,7 +44,7 @@
             android:layout_below="@id/empty_view_text_view"
             android:layout_centerHorizontal="true"
             android:paddingTop="8dp"
-            android:text="You should add some books!" />
+            android:text="You should tap the plus button to add some books!" />
 
         <TextView
             android:id="@+id/text_view"
