@@ -25,14 +25,14 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/book_title"
             android:paddingBottom="4dp"
-            tools:text="49.99" />
+            tools:text="Price: 49.99" />
 
         <TextView
             android:id="@+id/quantity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/book_price"
-            tools:text="7" />
+            tools:text="Stock: 7" />
 
     </LinearLayout>
 

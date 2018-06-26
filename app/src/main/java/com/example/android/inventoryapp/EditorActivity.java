@@ -5,6 +5,7 @@ import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
@@ -17,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -44,7 +46,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     private Uri currentBookUri;
     // The variable used to check if the user has changed anything in the form.
     private boolean bookChanged = false;
-    // TODO: Check if the listener works like this or needs modifications.
+    // The button used to order from the supplier.
+    Button orderButton;
     // OnTouchListener that listens for any user touches on a View.
     private View.OnTouchListener touchListener = new View.OnTouchListener() {
         @Override
@@ -59,13 +62,14 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editor);
 
-        // Initialize the EditTexts.
+        // Initialize the Views.
         bookTitleEditText = findViewById(R.id.book_title_edit_text);
         bookAuthorEditText = findViewById(R.id.book_author_edit_text);
         bookPriceEditText = findViewById(R.id.book_price_edit_text);
         bookQuantityEditText = findViewById(R.id.book_quantity_edit_text);
         bookSupplierNameEditText = findViewById(R.id.book_supplier_name_edit_text);
         bookSupplierPhoneNumberEditText = findViewById(R.id.book_supplier_phone_number_edit_text);
+        orderButton = findViewById(R.id.order_button);
 
         // Get the Id of the clicked book from the Intent.
         currentBookId = getIntent().getLongExtra("BOOK_ID", 0);
@@ -357,15 +361,32 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         double bookPriceDouble = cursor.getDouble(bookPriceIndex);
         int bookQuantityInteger = cursor.getInt(bookQuantityIndex);
         String bookSupplierString = cursor.getString(bookSupplierIndex);
-        String bookSupplierPhoneNumberString = cursor.getString(bookSupplierPhoneNumberIndex);
+        final String bookSupplierPhoneNumberString = cursor.getString(bookSupplierPhoneNumberIndex);
 
-        // Set The stored values inside the EditTexts.
+        // Set the stored values inside the EditTexts.
         bookTitleEditText.setText(bookTitleString);
         bookAuthorEditText.setText(bookAuthorString);
         bookPriceEditText.setText(String.valueOf(bookPriceDouble));
         bookQuantityEditText.setText(String.valueOf(bookQuantityInteger));
         bookSupplierNameEditText.setText(bookSupplierString);
         bookSupplierPhoneNumberEditText.setText(bookSupplierPhoneNumberString);
+
+        // Set onClickListener on the Order Button to start a phone Intent.
+        orderButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Check if the phone number is available.
+                if (TextUtils.isEmpty(bookSupplierPhoneNumberString)) {
+                    // Show a Toast if the number is not available.
+                    Toast.makeText(EditorActivity.this, "The supplier's phone number is not available", Toast.LENGTH_LONG).show();
+                } else {
+                    // Start a new phone Intent.
+                    Intent phoneIntent = new Intent(Intent.ACTION_DIAL);
+                    phoneIntent.setData(Uri.parse("tel: " + bookSupplierPhoneNumberString));
+                    startActivity(phoneIntent);
+                }
+            }
+        });
     }
 
     @Override
