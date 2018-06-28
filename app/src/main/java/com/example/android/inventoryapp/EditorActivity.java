@@ -47,7 +47,9 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     // The variable used to check if the user has changed anything in the form.
     private boolean bookChanged = false;
     // The button used to order from the supplier.
-    Button orderButton;
+    private Button orderButton;
+    // The variable that stores the book quantity.
+    private int bookQuantity;
     // OnTouchListener that listens for any user touches on a View.
     private View.OnTouchListener touchListener = new View.OnTouchListener() {
         @Override
@@ -70,27 +72,74 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         bookSupplierNameEditText = findViewById(R.id.book_supplier_name_edit_text);
         bookSupplierPhoneNumberEditText = findViewById(R.id.book_supplier_phone_number_edit_text);
         orderButton = findViewById(R.id.order_button);
+        Button minusButton = findViewById(R.id.minus_button);
+        Button plusButton = findViewById(R.id.plus_button);
 
         // Get the Id of the clicked book from the Intent.
         currentBookId = getIntent().getLongExtra("BOOK_ID", 0);
         // Get the Uri of the clicked book from the Intent.
         currentBookUri = getIntent().getData();
 
-        // Set onTouchListeners on the EditTexts.
+        // Set onTouchListeners on the Views.
         bookTitleEditText.setOnTouchListener(touchListener);
         bookAuthorEditText.setOnTouchListener(touchListener);
         bookPriceEditText.setOnTouchListener(touchListener);
         bookQuantityEditText.setOnTouchListener(touchListener);
         bookSupplierNameEditText.setOnTouchListener(touchListener);
         bookSupplierPhoneNumberEditText.setOnTouchListener(touchListener);
+        minusButton.setOnTouchListener(touchListener);
+        plusButton.setOnTouchListener(touchListener);
 
         // Check if the currentBookUri is null.
         if (currentBookUri == null) {
             // This is a new book so we need to set the Activity's title to "Add a book".
             setTitle("Add a book");
+            orderButton.setVisibility(View.GONE);
             // Invalidate the options menu, so the "Delete" menu option can be hidden.
             invalidateOptionsMenu();
         } else setTitle("Edit book");
+
+        // Set onClickListener on the minusButton to decrease the quantity.
+        minusButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (bookQuantity == 0) {
+                    Toast.makeText(EditorActivity.this, "The quantity cannot have a negative value", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                if (bookQuantity > 0) {
+                    // Check if the bookQuantityEditText is not empty.
+                    if (!TextUtils.isEmpty(bookQuantityEditText.getText().toString())) {
+                        // Update the bookQuantity with the value from the bookQuantityEditText.
+                        bookQuantity = Integer.parseInt(bookQuantityEditText.getText().toString().trim());
+                    }
+                    // Decrease the bookQuantity by 1.
+                    bookQuantity--;
+                    // Display the new bookQuantity in the bookQuantityEditText.
+                    bookQuantityEditText.setText(String.valueOf(bookQuantity));
+                }
+            }
+        });
+
+        // Set onClickListener on the plusButton to increase the quantity.
+        plusButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (bookQuantity >= 50) {
+                    Toast.makeText(EditorActivity.this, "The quantity is limited to 50", Toast.LENGTH_LONG).show();
+                } else {
+                    // Check if the bookQuantityEditText is not empty.
+                    if (!TextUtils.isEmpty(bookQuantityEditText.getText().toString())) {
+                        // Update the bookQuantity with the value from the bookQuantityEditText.
+                        bookQuantity = Integer.parseInt(bookQuantityEditText.getText().toString().trim());
+                    }
+                    // Increase the bookQuantity by 1.
+                    bookQuantity++;
+                    // Display the new bookQuantity in the bookQuantityEditText.
+                    bookQuantityEditText.setText(String.valueOf(bookQuantity));
+                }
+            }
+        });
 
         // Initialize the CursorLoader.
         getLoaderManager().initLoader(BOOK_CURSOR_LOADER_ID, null, this);
@@ -182,6 +231,24 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             if (!TextUtils.isEmpty(quantityString)) {
                 quantityInt = Integer.parseInt(quantityString);
             }
+
+            // Check if the required fields are empty.
+            if (TextUtils.isEmpty(priceString) || TextUtils.isEmpty(quantityString)) {
+                Toast.makeText(this, "Please fill all the required fields", Toast.LENGTH_LONG).show();
+                return;
+                // Check if the price has a negative value.
+            } else if (priceDouble < 0) {
+                Toast.makeText(this, "The price cannot have a negative value", Toast.LENGTH_LONG).show();
+                return;
+                // Check if the quantity has a negative value.
+            } else if (quantityInt < 0) {
+                Toast.makeText(this, "The quantity cannot have a negative value", Toast.LENGTH_LONG).show();
+                return;
+            } else if (quantityInt > 50) {
+                Toast.makeText(this, "The quantity is limited to 50", Toast.LENGTH_LONG).show();
+                return;
+            }
+
             // Create a ContentValues object where column names are the keys and book attributes from the editors are the values.
             ContentValues values = new ContentValues();
             values.put(BookEntry.COLUMN_PRODUCT_NAME, titleString);
@@ -214,10 +281,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             double priceDouble = 0;
             int quantityInt = 0;
 
-            if (TextUtils.isEmpty(priceString) || TextUtils.isEmpty(quantityString)) {
-                Toast.makeText(this, "Please fill all the required fields", Toast.LENGTH_LONG).show();
-                return;
-            }
             // Check if the priceString is empty.
             if (!TextUtils.isEmpty(priceString)) {
                 priceDouble = Double.parseDouble(priceString);
@@ -226,6 +289,24 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             if (!TextUtils.isEmpty(quantityString)) {
                 quantityInt = Integer.parseInt(quantityString);
             }
+
+            // Check if the required fields are empty.
+            if (TextUtils.isEmpty(priceString) || TextUtils.isEmpty(quantityString)) {
+                Toast.makeText(this, "Please fill all the required fields", Toast.LENGTH_LONG).show();
+                return;
+                // Check if the price has a negative value.
+            } else if (priceDouble < 0) {
+                Toast.makeText(this, "The price cannot have a negative value", Toast.LENGTH_LONG).show();
+                return;
+                // Check if the quantity has a negative value.
+            } else if (quantityInt < 0) {
+                Toast.makeText(this, "The quantity cannot have a negative value", Toast.LENGTH_LONG).show();
+                return;
+            } else if (quantityInt > 50) {
+                Toast.makeText(this, "The quantity is limited to 50", Toast.LENGTH_LONG).show();
+                return;
+            }
+
             // Create a ContentValues object where column names are the keys and book attributes from the editors are the values.
             ContentValues values = new ContentValues();
             values.put(BookEntry.COLUMN_PRODUCT_NAME, titleString);
@@ -359,7 +440,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         String bookTitleString = cursor.getString(bookTitleIndex);
         String bookAuthorString = cursor.getString(bookAuthorIndex);
         double bookPriceDouble = cursor.getDouble(bookPriceIndex);
-        int bookQuantityInteger = cursor.getInt(bookQuantityIndex);
+        bookQuantity = cursor.getInt(bookQuantityIndex);
         String bookSupplierString = cursor.getString(bookSupplierIndex);
         final String bookSupplierPhoneNumberString = cursor.getString(bookSupplierPhoneNumberIndex);
 
@@ -367,11 +448,11 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         bookTitleEditText.setText(bookTitleString);
         bookAuthorEditText.setText(bookAuthorString);
         bookPriceEditText.setText(String.valueOf(bookPriceDouble));
-        bookQuantityEditText.setText(String.valueOf(bookQuantityInteger));
+        bookQuantityEditText.setText(String.valueOf(bookQuantity));
         bookSupplierNameEditText.setText(bookSupplierString);
         bookSupplierPhoneNumberEditText.setText(bookSupplierPhoneNumberString);
 
-        // Set onClickListener on the Order Button to start a phone Intent.
+        // Set onClickListener on the orderButton to start a phone Intent.
         orderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

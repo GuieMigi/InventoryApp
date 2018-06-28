@@ -77,12 +77,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void insertBook() {
         // Create a ContentValues object where column names are the keys and the book's attributes are the values.
         ContentValues values = new ContentValues();
-        values.put(BookEntry.COLUMN_PRODUCT_NAME, "Sundiver");
-        values.put(BookEntry.COLUMN_AUTHOR_NAME, "David Brin");
+        values.put(BookEntry.COLUMN_PRODUCT_NAME, "I, Robot");
+        values.put(BookEntry.COLUMN_AUTHOR_NAME, "Isaac Asimov");
         values.put(BookEntry.COLUMN_PRICE, "49.99");
         values.put(BookEntry.COLUMN_QUANTITY, 1);
-        values.put(BookEntry.COLUMN_SUPPLIER_NAME, "Nemira");
-        values.put(BookEntry.COLUMN_SUPPLIER_PHONE_NUMBER, "+40 721 747 464");
+        values.put(BookEntry.COLUMN_SUPPLIER_NAME, "Paladin");
+        values.put(BookEntry.COLUMN_SUPPLIER_PHONE_NUMBER, "+40 21 369 3199");
         getContentResolver().insert(BookEntry.CONTENT_URI, values);
     }
 
